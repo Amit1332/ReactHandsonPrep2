@@ -1,13 +1,15 @@
 import React, { Component } from "react";
 
-class FormClass extends Component{
+class ValidateForm extends Component{
     constructor(){
         super()
         this.state= {
                 name:'',
                 email:'',
+                password:'',
                 rating:'',
                 studData:[],
+                error:{},
                 toast:false,
                 border:'',
                 borderStatus:false,
@@ -23,9 +25,33 @@ class FormClass extends Component{
 
     }
 
+    validate = ()=>{
+        if(!this.state.name){
+            this.state.error.name = "Please Fill your Name"
+           
+        }
+         if(!this.state.email){
+            this.state.error.email = "Please Fill your Email"
+           
+        }
+        if(this.state.password.length<6 || this.state.password.length>15){
+            this.state.error.password = "password should be greater than 6"
+           
+        }
+
+        if(!this.state.rating || parseInt(this.state.rating)<1 || parseInt(this.state.rating)>5){
+            this.state.error.rating = "Rating should be 1 to 5"
+           
+        }
+       
+         
+
+    }
+
     handleSubmit =(e)=>{
         e.preventDefault()
        
+        this.validate()
         
             if(!this.state.name){
                 this.setState({toast:true,border:'orange',warn:'⚠️',borderStatus:true,warnStatus:true})
@@ -41,7 +67,14 @@ class FormClass extends Component{
                         
                     }, 2000);
             }
-            else if(!this.state.rating){
+            else if(this.state.password.length<6 || this.state.password.length>15){
+                this.setState({toast:true,border:'orange',warn:'⚠️',borderStatus:true,warnStatus:true})
+                setTimeout(() => {
+                    this.setState({toast:false})
+                        
+                    }, 2000);
+            }
+            else if(!this.state.rating || parseInt(this.state.rating)<1 || parseInt(this.state.rating)>5){
                 this.setState({toast:true,border:'orange',warn:'⚠️',borderStatus:true,warnStatus:true})
                 setTimeout(() => {
                     this.setState({toast:false})
@@ -51,12 +84,14 @@ class FormClass extends Component{
                 const tempobj={
                     name:this.state.name,
                     email:this.state.email,
-                    rating:this.state.rating
+                    rating:this.state.rating,
+                    password:this.state.password
+
                 }
                 this.state.studData.push(tempobj)
                 this.setState({studData:this.state.studData})
                 this.setState({status:true,toast:true,borderStatus:false,warnStatus:false})
-                this.setState({name:'',email:'',rating:''})
+                this.setState({name:'',email:'',rating:'',password:''})
 
                 setTimeout(() => {
                 this.setState({status:false,toast:false})
@@ -66,7 +101,9 @@ class FormClass extends Component{
             }
            
 
-            
+    
+
+
 
             
     }
@@ -79,8 +116,11 @@ class FormClass extends Component{
 
 
               {
-                    this.state.rating.length<1? this.state.toast?<Toast data="Rating is Required"/>:'' :''
+                    (!this.state.rating || parseInt(this.state.rating)<1 || parseInt(this.state.rating)>5)? this.state.toast?<Toast data="Rating is Required and should be 1-5"/>:'' :''
              }
+               {
+                    this.state.password.length<6 || this.state.password.length>15 ? this.state.toast?<Toast data="Password should be greater than 6 char"/>:'' :''
+            }
 
          {
                     this.state.email.length<1? this.state.toast?<Toast data="Email is Required"/>:'' :''
@@ -97,6 +137,8 @@ class FormClass extends Component{
         <div className="labels">
        <label htmlFor="">Name</label>
         <label htmlFor="">Email</label>
+        <label htmlFor="">Password</label>
+
         <label htmlFor="">Ratings</label>
        </div>
 
@@ -115,10 +157,17 @@ class FormClass extends Component{
                     this.state.email.length<1 ? this.state.warnStatus? this.state.warn:'':''
              }
 </div>
+
 <div className="inp">
-<input type="number" placeholder='Enter your ratings' style={{border:`${this.state.rating<1?this.state.borderStatus?`1px solid ${this.state.border}`:'':`1px solid rgb(10, 5, 104)`}`}}value={this.state.rating} name="rating" onChange={this.handleChange}/>
+       <input type="text" placeholder='Enter your password' style={{border:`${( this.state.password.length<6 || this.state.password.length>15)? this.state.borderStatus?`1px solid ${this.state.border}`:'':`1px solid rgb(10, 5, 104)`}`}} value={this.state.password} name="password" onChange={this.handleChange}/>
+       {
+                  ( this.state.password.length<6 || this.state.password.length>15) ? this.state.warnStatus? this.state.warn:'':''
+             }
+</div>
+<div className="inp">
+<input type="number" placeholder='Enter your ratings' style={{border:`${(!this.state.rating || parseInt(this.state.rating)<1 || parseInt(this.state.rating)>5)?this.state.borderStatus?`1px solid ${this.state.border}`:'':`1px solid rgb(10, 5, 104)`}`}}value={this.state.rating} name="rating" onChange={this.handleChange}/>
 {
-                    this.state.rating.length<1 ?this.state.warnStatus? this.state.warn:'':''
+                   (!this.state.rating || parseInt(this.state.rating)<1 || parseInt(this.state.rating)>5)?this.state.warnStatus? this.state.warn:'':''
              }
 </div>
 
@@ -181,7 +230,7 @@ constructor(props){
 }
 
 render(){
-    console.log(this.props)
+    // console.log(this.props)
     return(
         <>
 
@@ -194,4 +243,4 @@ render(){
 }
 }
 
-export {FormClass}
+export {ValidateForm}
